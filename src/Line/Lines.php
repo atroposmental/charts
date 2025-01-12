@@ -3,10 +3,13 @@
 namespace Maantje\Charts\Line;
 
 use Maantje\Charts\Chart;
-use Maantje\Charts\Serie;
+use Maantje\Charts\Series;
 
-class Lines extends Serie
-{
+class Lines extends Series {
+    protected $max = 0;
+
+    protected $min = 0;
+
     /**
      * @param  Line[]  $lines
      */
@@ -17,8 +20,7 @@ class Lines extends Serie
         parent::__construct($yAxis);
     }
 
-    public function render(Chart $chart): string
-    {
+    public function render(Chart $chart): string {
         $svg = '';
 
         foreach ($this->lines as $line) {
@@ -28,13 +30,13 @@ class Lines extends Serie
         return $svg;
     }
 
-    public function maxValue(): float
-    {
+    public function maxValue(): float {
         $maxValue = 0;
 
         foreach ($this->lines as $dataSet) {
-            $dataSetMax = max(array_map(fn (Point $point) => $point->y, $dataSet->points));
-            if ($dataSetMax > $maxValue) {
+            $dataSetMax = max(array_map(fn(Point $point) => $point->y, $dataSet->points));
+
+            if ( $dataSetMax > $maxValue ) {
                 $maxValue = $dataSetMax;
             }
         }
@@ -42,12 +44,12 @@ class Lines extends Serie
         return $maxValue;
     }
 
-    public function minValue(): float
-    {
+    public function minValue(): float {
         $minValue = 0;
 
         foreach ($this->lines as $dataSet) {
-            $dataSetMin = min(array_map(fn (Point $point) => $point->y, $dataSet->points));
+            $dataSetMin = min(array_map(fn(Point $point) => $point->y, $dataSet->points));
+
             if ($dataSetMin < $minValue) {
                 $minValue = $dataSetMin;
             }

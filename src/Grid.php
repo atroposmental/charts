@@ -4,22 +4,20 @@ namespace Maantje\Charts;
 
 use Maantje\Charts\SVG\Line;
 
-readonly class Grid implements Renderable
-{
+readonly class Grid implements Renderable {
     public function __construct(
         public int $lines = 5,
-        public string $lineColor = '#ccc',
-        public string $labelColor = '#333',
+        public string $lineColor = 'rgb(0,0,0,0.15)',
+        public string $labelColor = 'rgb(0,0,0,0.5)',
+        public float $lineWidth = 1
     ) {
-        //
+        // ...
     }
 
-    public function render(Chart $chart): string
-    {
+    public function render(Chart $chart): string {
+        $svg = '';
         $numLines = $this->lines;
         $lineSpacing = $chart->availableHeight() / $numLines;
-
-        $svg = '';
 
         for ($i = 0; $i <= $numLines; $i++) {
             $y = $chart->bottom() - ($i * $lineSpacing);
@@ -30,8 +28,9 @@ readonly class Grid implements Renderable
                 x2: $chart->right(),
                 y2: $y,
                 stroke: $this->lineColor,
-                strokeWidth: 1
+                strokeWidth: $this->lineWidth
             );
+
             $svg .= $line;
         }
 

@@ -5,10 +5,10 @@ namespace Maantje\Charts;
 use Closure;
 use Maantje\Charts\SVG\Fragment;
 use Maantje\Charts\SVG\Line;
+use Maantje\Charts\SVG\Rect;
 use Maantje\Charts\SVG\Text;
 
-class XAxis implements Renderable
-{
+class XAxis implements Renderable {
     public Closure $formatter;
 
     /**
@@ -19,38 +19,44 @@ class XAxis implements Renderable
         public array $data = [],
         public string $title = '',
         public array $annotations = [],
-        ?Closure $formatter = null
+        ?Closure $formatter = null,
+        public array $labels = [],
+        public string $lineColor = 'rgb(0,0,0,0.5)',
+        public string $labelColor = 'rgb(0,0,0,0.5)'
     ) {
-        $this->formatter = $formatter ?? fn (mixed $label) => number_format($label);
+        $this->formatter = $formatter ?? fn(mixed $label) => number_format($label);
     }
 
-    public function maxValue(): float
-    {
-        return max(array_map(fn (float $data) => $data, $this->data));
+    public function maxValue(): float {
+        return max(...$this->data);
     }
 
-    public function minValue(): float
-    {
-        return min(array_map(fn (float $data) => $data, $this->data));
+    public function minValue(): float {
+        return min(...$this->data);
     }
 
-    public function render(Chart $chart): string
-    {
-        $labelCount = count($this->data);
+    public function render(Chart $chart): string {
+        $labelCount = array_key_last($this->data);
 
         $svg = new Line(
             x1: $chart->left(),
             y1: $chart->bottom(),
             x2: $chart->right(),
             y2: $chart->bottom(),
-            stroke: 'black'
+            stroke: $this->lineColor
         );
 
-        for ($i = 0; $i < $labelCount; $i++) {
+        for ($i = 0; $i <= $labelCount; $i++) {
             $x = $chart->xFor($this->data[$i]);
             $y = $chart->bottom() + 25;
 
-            $label = $this->formatter->call($this, $this->data[$i]);
+            $px = ($i == 0 ? $chart->left() : $chart->xFor($this->data[$i - 1]));
+            $nx = ($i == $labelCount ? $chart->right() : $chart->xFor($this->data[$i + 1]));
+            $xw = ($i == 0 ? $nx - $x : $x - $px) / 2;
+            
+
+
+            $label = $this->labels[$i] ?? $this->formatter->call($this, $this->data[$i]);
             $lineY = $chart->bottom() - 5;
 
             $svg .= new Fragment([
@@ -58,16 +64,26 @@ class XAxis implements Renderable
                     content: $label,
                     x: $x,
                     y: $y,
-                    fontFamily: $chart->fontFamily,
-                    fontSize: $chart->fontSize,
-                    textAnchor: 'middle'
+                    fontFamily: $chart->config->fontFamily,
+                    fontSize: $chart->config->fontSize,
+                    fontWeight: '600',
+                    textAnchor: ($i == 0 ? 'start' : ($i == $labelCount ? 'end' : 'middle')),
+                    fill: $this->labelColor
                 ),
                 new Line(
                     x1: $x,
                     y1: $chart->bottom(),
                     x2: $x,
                     y2: $lineY,
-                    stroke: 'black'
+                    stroke: $this->lineColor
+                ),
+                new Rect(
+                    x: ($x - ($i == 0 ? 0 : ($xw / 2))),
+                    y: $chart->top(),
+                    width: (in_array($i, [0, $labelCount]) ? ($xw / 2) : $xw),
+                    height: $chart->availableHeight(),
+                    fill: $chart->config->background,
+                    additional: ['class' => 'x-axis-rect', 'data-x' => $i]
                 )
             ]);
         }
@@ -75,14 +91,14 @@ class XAxis implements Renderable
         $titleX = $chart->availableWidth() / 2 + $chart->left();
         $titleY = $chart->bottom() + 40;
 
-
         $svg .= new Text(
-            content: $this->title,
             x: $titleX,
             y: $titleY,
-            fontFamily: $chart->fontFamily,
-            fontSize: $chart->fontSize,
-            textAnchor: 'middle',
+            content: $this->title,
+            fontFamily: $chart->config->fontFamily,
+            fontSize: $chart->config->fontSize,
+            textAnchor: 'end',
+            fill: $this->labelColor
         );
 
         return $svg;

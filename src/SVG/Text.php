@@ -4,14 +4,14 @@ namespace Maantje\Charts\SVG;
 
 use Stringable;
 
-class Text implements Stringable
-{
+class Text implements Stringable {
     public function __construct(
         private null|int|float|string $content,
         private float $x = 0,
         private float $y = 0,
         private string $fontFamily = 'Arial',
         private int $fontSize = 16,
+        private string $fontWeight = '500',
         private string $fill = 'black',
         private string $stroke = 'none',
         private float $strokeWidth = 0,
@@ -20,19 +20,19 @@ class Text implements Stringable
         private string $alignmentBaseline = '',
         private ?string $transform = null
     ) {
-        if (is_null($this->content)) {
+        if ( is_null($this->content) ) {
             $this->content = '';
         }
     }
 
-    public function __toString(): string
-    {
+    public function __toString(): string {
         $attributes = sprintf(
-            'x="%s" y="%s" font-family="%s" font-size="%s" fill="%s" stroke="%s" stroke-width="%s" text-anchor="%s" dominant-baseline="%s" alignment-baseline="%s"',
+            'x="%s" y="%s" font-family="%s" font-size="%s" font-weight="%s" fill="%s" stroke="%s" stroke-width="%s" text-anchor="%s" dominant-baseline="%s" alignment-baseline="%s"',
             $this->x,
             $this->y,
             htmlspecialchars($this->fontFamily, ENT_QUOTES),
             $this->fontSize,
+            $this->fontWeight,
             htmlspecialchars($this->fill, ENT_QUOTES),
             htmlspecialchars($this->stroke, ENT_QUOTES),
             $this->strokeWidth,

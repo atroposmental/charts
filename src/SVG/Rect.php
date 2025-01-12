@@ -3,9 +3,11 @@
 namespace Maantje\Charts\SVG;
 
 use Stringable;
+use Maantje\Charts\Svgable;
 
-readonly class Rect implements Stringable
-{
+readonly class Rect implements Stringable {
+    use Svgable;
+
     public function __construct(
         private float $x = 0,
         private float $y = 0,
@@ -18,28 +20,14 @@ readonly class Rect implements Stringable
         private float $rx = 0,
         private float $ry = 0,
         public mixed $title = '',
-        private ?string $transform = null
-    ) {}
+        private ?string $transform = null,
+        private ?array $additional = null
+    ) {
+        // ...
+    }
 
-    public function __toString(): string
-    {
-        $attributes = sprintf(
-            'x="%s" y="%s" width="%s" height="%s" fill="%s" fill-opacity="%s" stroke="%s" stroke-width="%s" rx="%s" ry="%s"',
-            $this->x,
-            $this->y,
-            $this->width,
-            $this->height,
-            htmlspecialchars($this->fill, ENT_QUOTES),
-            $this->fillOpacity,
-            htmlspecialchars($this->stroke, ENT_QUOTES),
-            $this->strokeWidth,
-            $this->rx,
-            $this->ry
-        );
-
-        if ($this->transform) {
-            $attributes .= sprintf(' transform="%s"', htmlspecialchars($this->transform, ENT_QUOTES));
-        }
+    public function __toString(): string {
+        $attributes = $this->toSvgProps();
 
         return sprintf('<rect %s><title>%s</title></rect>', $attributes, htmlspecialchars($this->title, ENT_QUOTES));
     }

@@ -3,10 +3,9 @@
 namespace Maantje\Charts\Bar;
 
 use Maantje\Charts\Chart;
-use Maantje\Charts\Serie;
+use Maantje\Charts\Series;
 
-class Bars extends Serie
-{
+class Bars extends Series {
     /**
      * @param  BarContract[]  $bars
      */
@@ -17,18 +16,15 @@ class Bars extends Serie
         parent::__construct($yAxis);
     }
 
-    public function maxValue(): float
-    {
-        return max(array_map(fn (BarContract $data) => $data->value(), $this->bars));
+    public function maxValue(): float {
+        return max(array_map(fn(BarContract $data) => $data->value(), $this->bars));
     }
 
-    public function minValue(): float
-    {
-        return min(array_map(fn (BarContract $data) => $data->value(), $this->bars));
+    public function minValue(): float {
+        return min(array_map(fn(BarContract $data) => $data->value(), $this->bars));
     }
 
-    public function render(Chart $chart): string
-    {
+    public function render(Chart $chart): string {
         $numBars = count($this->bars);
 
         $maxBarWidth = $chart->availableWidth() / $numBars;

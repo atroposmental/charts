@@ -2,9 +2,8 @@
 
 namespace Maantje\Charts\Annotations;
 
-interface YAxisAnnotation
-{
+interface YAxisAnnotation {
     public function yAxis(): ?string;
 
-    public function setYAxis(string $yAxis): void;
+    public function setYAxis(string $yAxis): static;
 }

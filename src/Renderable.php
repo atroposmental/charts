@@ -2,7 +2,6 @@
 
 namespace Maantje\Charts;
 
-interface Renderable
-{
+interface Renderable {
     public function render(Chart $chart): string;
 }

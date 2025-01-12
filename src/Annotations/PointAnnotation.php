@@ -8,8 +8,7 @@ use Maantje\Charts\SVG\Circle;
 use Maantje\Charts\SVG\Fragment;
 use Maantje\Charts\SVG\TextResizeableRect;
 
-class PointAnnotation implements Renderable, RendersAfterSeries, YAxisAnnotation
-{
+class PointAnnotation implements Renderable, RendersAfterSeries, YAxisAnnotation {
     use HasYAxis;
 
     public function __construct(
@@ -29,16 +28,15 @@ class PointAnnotation implements Renderable, RendersAfterSeries, YAxisAnnotation
         public int $labelPaddingX = 20,
         public ?int $fontSize = null,
     ) {
-        //
+        // ...
     }
 
-    public function render(Chart $chart): string
-    {
+    public function render(Chart $chart): string {
         $x = $chart->xFor($this->x);
         $y = $chart->yForAxis($this->y, $this->yAxis);
 
         $labelY = $y - $this->markerSize - $this->labelOffsetY;
-        $fontSize = $this->fontSize ?? $chart->fontSize;
+        $fontSize = $this->fontSize ?? $chart->config->fontSize;
 
         return new Fragment(children: [
             new Circle(
@@ -54,7 +52,7 @@ class PointAnnotation implements Renderable, RendersAfterSeries, YAxisAnnotation
                 content: $this->label,
                 x: $x,
                 y: $labelY,
-                fontFamily: $chart->fontFamily,
+                fontFamily: $chart->config->fontFamily,
                 fontSize: $fontSize,
                 rectFill: $this->labelBackgroundColor,
                 rectStroke: $this->labelBorderColor,
